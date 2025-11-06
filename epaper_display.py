@@ -156,7 +156,7 @@ class EpaperDisplay:
                     
                     if y_position > self.epd.height - 20:
                         break
-            
+            image.rotate(180)
             # Display on e-paper
             self.epd.displayPartBaseImage(self.epd.getbuffer(image))
             logging.info(f"Displayed {count if events_list else 0} events")
