@@ -30,6 +30,9 @@ class EpaperDisplay:
         self.fontdir = fontdir
         self.epd.init(self.epd.FULL_UPDATE)
         self.epd.Clear(0xFF)
+        # Initialize event drawing state
+        self.event_column = 0
+        self.event_y = 0
         logging.info("E-paper display initialized")
     
     def _load_fonts(self):
@@ -47,6 +50,27 @@ class EpaperDisplay:
             font_tiny = ImageFont.load_default()
         
         return font_large, font_medium, font_small, font_tiny
+    
+    def draw_event(self, draw, time_str, summary, font_tiny, font_small):
+        """
+        Draw a single event at the current position.
+        
+        Args:
+            draw: ImageDraw object
+            time_str: Time string for the event
+            summary: Event summary text
+            font_tiny: Font for time
+            font_small: Font for summary
+        """
+        x_positions = [5, 125]
+        x_pos = x_positions[self.event_column]
+        draw.text((x_pos, self.event_y), time_str, font=font_tiny, fill=0)
+        draw.text((x_pos + 25, self.event_y), summary, font=font_small, fill=0)
+        
+        # Update position for next event
+        self.event_column = (self.event_column + 1) % 2
+        if self.event_column == 0:
+            self.event_y += 20
     
     def display_auth_code(self, verification_url, user_code):
         """
@@ -94,6 +118,51 @@ class EpaperDisplay:
             logging.error(f"Error displaying auth code: {e}")
             raise
     
+    def _draw_events(self, draw, events_list, font_small, font_tiny):
+        """
+        Draw calendar events on the provided draw object.
+        
+        Args:
+            draw: ImageDraw object
+            events_list: List of event dictionaries
+            font_small: Font for event summaries
+            font_tiny: Font for event times
+        """
+        count = 0  # Initialize count
+        if not events_list:
+            draw.text((5, self.event_y), "No events today", font=font_small, fill=0)
+        else:
+            # Display events
+            displayed_events = set()
+            max_events = 8
+            
+            for event in events_list:
+                # Skip duplicate events
+                event_key = f"{event.get('summary', 'No Title')}_{event.get('start')}"
+                if event_key in displayed_events or count >= max_events:
+                    continue
+                displayed_events.add(event_key)
+                count += 1
+                
+                # Extract time
+                start_time = event.get('start', '')
+                if 'T' in start_time:
+                    time_str = start_time.split('T')[1][:5]  # HH:MM
+                else:
+                    time_str = "All day"
+                
+                # Event summary
+                summary = event.get('summary', 'No Title')
+                if len(summary) > 12:
+                    summary = summary[:12] + "~"
+                
+                # Draw event
+                self.draw_event(draw, time_str, summary, font_tiny, font_small)
+                
+                if self.event_y > self.epd.height - 20:
+                    break
+        return count
+    
     def display_calendar_events(self, events_list):
         """
         Display calendar events on e-paper.
@@ -103,7 +172,7 @@ class EpaperDisplay:
         """
         try:
             # Create a new image with white background
-            image = Image.new('1', (self.epd.height, self.epd.width), 255)
+            image = Image.new('1', (self.epd.width, self.epd.height), 255)
             draw = ImageDraw.Draw(image)
             
             # Load fonts
@@ -111,54 +180,19 @@ class EpaperDisplay:
             
             # Draw title
             y_position = 5
+            draw.text((5, y_position), "Today's Events", font=font_medium, fill=0)
+            y_position += 30
             
             # Draw a line
             draw.line([(5, y_position), (self.epd.width - 5, y_position)], fill=0, width=1)
             y_position += 5
             
-            count = 0  # Initialize count
-            if not events_list:
-                draw.text((5, y_position), "No events today", font=font_small, fill=0)
-            else:
-                # Display events in two columns horizontally
-                displayed_events = set()
-                max_events = 8  # Increased to fit more in columns
-                column = 0
-                x_positions = [5, 125]  # Left and right column positions
-                
-                for event in events_list:
-                    # Skip duplicate events
-                    event_key = f"{event.get('summary', 'No Title')}_{event.get('start')}"
-                    if event_key in displayed_events or count >= max_events:
-                        continue
-                    displayed_events.add(event_key)
-                    count += 1
-                    
-                    # Extract time
-                    start_time = event.get('start', '')
-                    if 'T' in start_time:
-                        time_str = start_time.split('T')[1][:5]  # HH:MM
-                    else:
-                        time_str = "All day"
-                    
-                    # Event summary
-                    summary = event.get('summary', 'No Title')
-                    if len(summary) > 12:  # Adjusted for narrower columns
-                        summary = summary[:12] + "~"
-                    
-                    # Draw event in current column
-                    x_pos = x_positions[column]
-                    draw.text((x_pos, y_position), f"{time_str}", font=font_tiny, fill=0)
-                    draw.text((x_pos + 35, y_position), summary, font=font_small, fill=0)
-                    
-                    # Move to next column or next row
-                    column += 1
-                    if column >= 2:
-                        column = 0
-                        y_position += 20
-                    
-                    if y_position > self.epd.height - 20:
-                        break
+            # Reset event drawing position
+            self.event_column = 0
+            self.event_y = y_position
+            
+            # Draw events
+            count = self._draw_events(draw, events_list, font_small, font_tiny)
             
             # Rotate image upside down
             image = image.rotate(180)
