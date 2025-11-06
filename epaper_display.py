@@ -100,7 +100,7 @@ class EpaperDisplay:
         """
         try:
             # Create a new image with white background
-            image = Image.new('1', (self.epd.width, self.epd.height), 255)
+            image = Image.new('1', (self.epd.height, self.epd.width), 255)
             draw = ImageDraw.Draw(image)
             
             # Load fonts
@@ -108,8 +108,6 @@ class EpaperDisplay:
             
             # Draw title
             y_position = 5
-            draw.text((5, y_position), "Today's Events", font=font_medium, fill=0)
-            y_position += 30
             
             # Draw a line
             draw.line([(5, y_position), (self.epd.width - 5, y_position)], fill=0, width=1)
