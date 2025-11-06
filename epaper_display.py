@@ -16,7 +16,7 @@ fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__
 if os.path.exists(libdir):
     sys.path.append(libdir)
 
-from TP_lib import epd2in13_V2
+from lib.TP_lib import epd2in13_V2
 
 logging.basicConfig(level=logging.INFO)
 
@@ -144,7 +144,7 @@ class EpaperDisplay:
                     # Event summary
                     summary = event.get('summary', 'No Title')
                     if len(summary) > 12:  # Adjusted for narrower columns
-                        summary = summary[:9] + "..."
+                        summary = summary[:12] + "~"
                     
                     # Draw event in current column
                     x_pos = x_positions[column]

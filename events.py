@@ -34,7 +34,7 @@ def get_todays_calendar_events(credentials_file='token.json'):
                                         timeMax=today_end, singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
-
+    events.filter(lambda e: 'colorId' not in e)
     # Extract relevant data and return as a list of dictionaries
     today_events = []
     for event in events:
@@ -54,7 +54,6 @@ def get_todays_calendar_events(credentials_file='token.json'):
                 'color_id': event.get('colorId', None)
                 # 'color': to_lp_color(event.get('colorId', None))  # Handle events without color
             }
-            # print(event_data)
             today_events.append(event_data)
 
     return today_events
