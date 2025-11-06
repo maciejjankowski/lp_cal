@@ -115,13 +115,15 @@ class EpaperDisplay:
             draw.line([(5, y_position), (self.epd.width - 5, y_position)], fill=0, width=1)
             y_position += 5
             
+            count = 0  # Initialize count
             if not events_list:
                 draw.text((5, y_position), "No events today", font=font_small, fill=0)
             else:
-                # Display events (limit to fit on screen)
+                # Display events in two columns horizontally
                 displayed_events = set()
-                max_events = 6
-                count = 0
+                max_events = 8  # Increased to fit more in columns
+                column = 0
+                x_positions = [5, 125]  # Left and right column positions
                 
                 for event in events_list:
                     # Skip duplicate events
@@ -140,13 +142,19 @@ class EpaperDisplay:
                     
                     # Event summary
                     summary = event.get('summary', 'No Title')
-                    if len(summary) > 15:
-                        summary = summary[:12] + "..."
+                    if len(summary) > 12:  # Adjusted for narrower columns
+                        summary = summary[:9] + "..."
                     
-                    # Draw event
-                    draw.text((5, y_position), f"{time_str}", font=font_tiny, fill=0)
-                    draw.text((50, y_position), summary, font=font_small, fill=0)
-                    y_position += 20
+                    # Draw event in current column
+                    x_pos = x_positions[column]
+                    draw.text((x_pos, y_position), f"{time_str}", font=font_tiny, fill=0)
+                    draw.text((x_pos + 35, y_position), summary, font=font_small, fill=0)
+                    
+                    # Move to next column or next row
+                    column += 1
+                    if column >= 2:
+                        column = 0
+                        y_position += 20
                     
                     if y_position > self.epd.height - 20:
                         break
