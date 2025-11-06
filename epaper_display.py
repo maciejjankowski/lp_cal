@@ -83,6 +83,9 @@ class EpaperDisplay:
             
             draw.text((10, y_position), user_code, font=font_large, fill=0)
             
+            # Rotate image upside down
+            image = image.rotate(180)
+            
             # Display on e-paper
             self.epd.displayPartBaseImage(self.epd.getbuffer(image))
             logging.info(f"Auth code displayed: {user_code}")
@@ -156,7 +159,10 @@ class EpaperDisplay:
                     
                     if y_position > self.epd.height - 20:
                         break
-            image.rotate(180)
+            
+            # Rotate image upside down
+            image = image.rotate(180)
+            
             # Display on e-paper
             self.epd.displayPartBaseImage(self.epd.getbuffer(image))
             logging.info(f"Displayed {count if events_list else 0} events")
