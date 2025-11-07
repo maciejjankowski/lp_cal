@@ -53,8 +53,8 @@ class EpaperDisplay:
             font_tiny = ImageFont.load_default()
         
         return font_large, font_medium, font_small, font_tiny
-    
-    def draw_event(self, draw, time_str, summary, font_tiny, font_small):
+
+    def draw_event(self, draw, time_str, summary, font_tiny, font_small, font_medium):
         """
         Draw a single event at the current position.
         
@@ -64,17 +64,18 @@ class EpaperDisplay:
             summary: Event summary text
             font_tiny: Font for time
             font_small: Font for summary
+            font_medium: Font for medium text
         """
         x_positions = [0, 125]
         x_pos = x_positions[self.event_column]
         draw.text((x_pos, self.event_y), time_str, font=font_tiny, fill=0)
         self.event_y += 15
-        draw.text((x_pos, self.event_y), summary, font=font_small, fill=0)
+        draw.text((x_pos, self.event_y), summary, font=font_medium, fill=0)
         
         # Update position for next event
         self.event_column = (self.event_column + 1) % 2
         if self.event_column == 0:
-            self.event_y += 30
+            self.event_y += 15
     
     def display_auth_code(self, verification_url, user_code):
         """
@@ -122,7 +123,7 @@ class EpaperDisplay:
             logging.error(f"Error displaying auth code: {e}")
             raise
     
-    def _draw_events(self, draw, events_list, font_small, font_tiny):
+    def _draw_events(self, draw, events_list, font_small, font_tiny, font_medium):
         """
         Draw calendar events on the provided draw object.
         
@@ -161,7 +162,7 @@ class EpaperDisplay:
                     summary = summary[:14] + "~"
                 
                 # Draw event
-                self.draw_event(draw, time_str, summary, font_tiny, font_small)
+                self.draw_event(draw, time_str, summary, font_tiny, font_small, font_medium)
                 
                 if self.event_y > self.epd.height - 20:
                     break
