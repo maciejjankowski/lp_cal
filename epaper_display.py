@@ -15,6 +15,9 @@ libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
 if os.path.exists(libdir):
     sys.path.append(libdir)
+else:
+    logging.warning(f"Library directory not found: {libdir}")
+    logging.warning(f"Font directory not found: {fontdir}")
 
 from lib.TP_lib import epd2in13_V2
 
