@@ -42,7 +42,7 @@ class EpaperDisplay:
         """Load fonts for display."""
         try:
             font_large = ImageFont.truetype(os.path.join(self.fontdir, 'Font.ttc'), 24)
-            font_medium = ImageFont.truetype(os.path.join(self.fontdir, 'Font.ttc'), 18)
+            font_medium = ImageFont.truetype(os.path.join(self.fontdir, 'Font.ttc'), 16)
             font_small = ImageFont.truetype(os.path.join(self.fontdir, 'Font.ttc'), 14)
             font_tiny = ImageFont.truetype(os.path.join(self.fontdir, 'Font.ttc'), 12)
         except Exception as e:
