@@ -11,8 +11,8 @@ import logging
 from PIL import Image, ImageDraw, ImageFont
 
 # Add library paths
-libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
-fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
+libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'lp_cal', 'lib')
+fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lp_cal', 'pic')
 if os.path.exists(libdir):
     sys.path.append(libdir)
 else:
