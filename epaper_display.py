@@ -190,7 +190,7 @@ class EpaperDisplay:
             self.event_y = y_position
             
             # Draw events
-            count = self._draw_events(draw, events_list, font_small, font_tiny)
+            count = self._draw_events(draw, events_list, font_small, font_tiny, font_medium)
             
             # Rotate image upside down
             image = image.rotate(180)
