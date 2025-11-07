@@ -62,15 +62,15 @@ class EpaperDisplay:
             font_tiny: Font for time
             font_small: Font for summary
         """
-        x_positions = [5, 125]
+        x_positions = [0, 125]
         x_pos = x_positions[self.event_column]
         draw.text((x_pos, self.event_y), time_str, font=font_tiny, fill=0)
-        draw.text((x_pos + 25, self.event_y), summary, font=font_small, fill=0)
+        draw.text((x_pos + 30, self.event_y), summary, font=font_small, fill=0)
         
         # Update position for next event
         self.event_column = (self.event_column + 1) % 2
         if self.event_column == 0:
-            self.event_y += 25
+            self.event_y += 30
     
     def display_auth_code(self, verification_url, user_code):
         """
