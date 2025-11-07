@@ -70,7 +70,7 @@ class EpaperDisplay:
         # Update position for next event
         self.event_column = (self.event_column + 1) % 2
         if self.event_column == 0:
-            self.event_y += 20
+            self.event_y += 25
     
     def display_auth_code(self, verification_url, user_code):
         """
@@ -153,8 +153,8 @@ class EpaperDisplay:
                 
                 # Event summary
                 summary = event.get('summary', 'No Title')
-                if len(summary) > 12:
-                    summary = summary[:12] + "~"
+                if len(summary) > 14:
+                    summary = summary[:14] + "~"
                 
                 # Draw event
                 self.draw_event(draw, time_str, summary, font_tiny, font_small)
