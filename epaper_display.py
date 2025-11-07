@@ -68,7 +68,8 @@ class EpaperDisplay:
         x_positions = [0, 125]
         x_pos = x_positions[self.event_column]
         draw.text((x_pos, self.event_y), time_str, font=font_tiny, fill=0)
-        draw.text((x_pos + 30, self.event_y), summary, font=font_small, fill=0)
+        self.event_y += 15
+        draw.text((x_pos, self.event_y), summary, font=font_small, fill=0)
         
         # Update position for next event
         self.event_column = (self.event_column + 1) % 2
@@ -181,14 +182,7 @@ class EpaperDisplay:
             # Load fonts
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
             
-            # Draw title
-            y_position = 5
-            draw.text((5, y_position), "Today's Events", font=font_medium, fill=0)
-            y_position += 30
-            
-            # Draw a line
-            draw.line([(5, y_position), (self.epd.width - 5, y_position)], fill=0, width=1)
-            y_position += 5
+            y_position = 0
             
             # Reset event drawing position
             self.event_column = 0
