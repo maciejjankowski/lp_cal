@@ -20,9 +20,6 @@ def calculate_time_until_sunset(sunset_datetime):
     if time_difference.total_seconds() <= 0:
         # Sunset passed, get time to next sunrise (tomorrow)
         sunrise_datetime = get_sunrise((now + timedelta(days=1)).date())
-        # time_to_sunrise = sunrise_datetime - now
-        # hours = int(time_to_sunrise.total_seconds() // 3600)
-        # minutes = int((time_to_sunrise.total_seconds() % 3600) // 60)
         return f"^ {sunrise_datetime.hour}:{sunrise_datetime.minute}"
     
     hours = int(time_difference.total_seconds() // 3600)
@@ -30,22 +27,10 @@ def calculate_time_until_sunset(sunset_datetime):
     return f"v {hours}:{minutes}"
 
 
-def display_soluna_information():
-    """Retrieve soluna data and display on e-paper."""
+if __name__ == "__main__":
     moon_phase = get_current_moon_phase()
     sunset_time = get_sunset()
     time_to_sunset = calculate_time_until_sunset(sunset_time)
-
-    display = EpaperDisplay(clear_screen=False)
-    display.display_soluna(moon_phase, time_to_sunset)
-    display.sleep()
-    display.cleanup()
-
-moon_phase = get_current_moon_phase()
-sunset_time = get_sunset()
-time_to_sunset = calculate_time_until_sunset(sunset_time)
-
-if __name__ == "__main__":
-    display_soluna_information()
-    # print(f"Moon Phase: {moon_phase}")
-    # print(f"Time to Sunset: {time_to_sunset}")
+    
+    print(f"Moon Phase: {moon_phase}")
+    print(f"Time to Sunset: {time_to_sunset}")

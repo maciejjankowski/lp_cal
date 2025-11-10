@@ -235,7 +235,6 @@ class EpaperDisplay:
             
             # Display on e-paper
             self.epd.displayPartBaseImage(self.epd.getbuffer(image))
-            logging.info(f"Displayed soluna: {moon_phase}, {time_to_sunset}")
             
         except Exception as e:
             logging.error(f"Error displaying soluna: {e}")

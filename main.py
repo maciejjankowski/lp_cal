@@ -8,7 +8,7 @@ import os
 import events
 import auth
 from epaper_display import EpaperDisplay
-
+import soluna
 
 def main():
     """Display calendar events on e-paper with automatic authentication."""
@@ -27,7 +27,10 @@ def main():
 
         # Display events on e-paper
         display.display_calendar_events(events_list)
-        
+        moon_phase = soluna.get_current_moon_phase()
+        sunset_time = soluna.get_sunset()
+        time_to_sunset = soluna.calculate_time_until_sunset(sunset_time)
+        display.display_soluna(moon_phase, time_to_sunset)
         # Put display to sleep
         display.sleep()
         
