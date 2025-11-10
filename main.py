@@ -4,6 +4,7 @@
 Main entry point for e-paper calendar display.
 Minimal orchestration of auth, events, and display modules.
 """
+import os
 import events
 import auth
 from epaper_display import EpaperDisplay
@@ -21,8 +22,9 @@ def main():
         creds = auth.get_credentials(display)
         
         # Get today's calendar events
-        events_list = events.get_todays_calendar_events()
-        
+        token_file = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lp_cal', 'token.json')
+        events_list = events.get_todays_calendar_events(token_file)
+
         # Display events on e-paper
         display.display_calendar_events(events_list)
         

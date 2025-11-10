@@ -26,11 +26,11 @@ def get_credentials(display=None):
         Credentials object
     """
     creds = None
-    
+    token_file = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lp_cal', 'token.json')
     # Check if token.json exists
-    if os.path.exists("token.json"):
+    if os.path.exists(token_file):
         try:
-            creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+            creds = Credentials.from_authorized_user_file(token_file, SCOPES)
         except Exception as e:
             print(f"Error loading token.json: {e}")
             creds = None
