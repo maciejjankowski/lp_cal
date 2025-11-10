@@ -21,21 +21,21 @@ loc = LocationInfo('Ełk', 'Poland', latitude=LATITUDE, longitude=LONGITUDE)
 def get_current_moon_phase():
     p = phase(date.today())
     if p < 1.84566:
-        return "🌑"
+        return "🌑" # O
     elif p < 5.53699:
-        return "🌒"
+        return "🌒" # )
     elif p < 9.22831:
-        return "🌓"
+        return "🌓" # d)
     elif p < 12.91963:
-        return "🌔"
+        return "🌔" # o)
     elif p < 16.61096:
-        return "🌕"
+        return "🌕" # (O)
     elif p < 20.30228:
-        return "🌖"
+        return "🌖" # (o
     elif p < 23.99361:
-        return "🌗"
+        return "🌗" # (b
     else:
-        return "🌘"
+        return "🌘" # (
 
 def get_moonrise(target_date=None):
     if target_date is None:
