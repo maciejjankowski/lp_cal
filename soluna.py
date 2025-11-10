@@ -23,16 +23,16 @@ def calculate_time_until_sunset(sunset_datetime):
         time_to_sunrise = sunrise_datetime - now
         hours = int(time_to_sunrise.total_seconds() // 3600)
         minutes = int((time_to_sunrise.total_seconds() % 3600) // 60)
-        return f"To Sunrise: {hours}h {minutes}m"
+        return f"^ {hours}:{minutes}"
     
     hours = int(time_difference.total_seconds() // 3600)
     minutes = int((time_difference.total_seconds() % 3600) // 60)
-    return f"{hours}h {minutes}m"
+    return f"v {hours}:{minutes}"
 
 
 def display_soluna_information():
     """Retrieve soluna data and display on e-paper."""
-    display = EpaperDisplay()
+    display = EpaperDisplay(clear_screen=False)
     display.display_soluna(moon_phase, time_to_sunset)
     display.sleep()
     display.cleanup()

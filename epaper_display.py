@@ -13,8 +13,9 @@ from PIL import Image, ImageDraw, ImageFont
 # Add library paths
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'lp_cal', 'lib')
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lp_cal', 'pic')
-if os.path.exists(libdir):
+if os.path.exists(libdir) and os.path.exists(fontdir):
     sys.path.append(libdir)
+    sys.path.append(fontdir)
 else:
     logging.warning(f"Library directory not found: {libdir}")
     logging.warning(f"Font directory not found: {fontdir}")
@@ -27,12 +28,16 @@ logging.basicConfig(level=logging.INFO)
 class EpaperDisplay:
     """Class to manage e-paper display for calendar and authentication."""
     
-    def __init__(self):
+    def __init__(self, clear_screen=True):
         """Initialize the e-paper display."""
         self.epd = epd2in13_V2.EPD_2IN13_V2()
         self.fontdir = fontdir
-        self.epd.init(self.epd.FULL_UPDATE)
-        self.epd.Clear(0xFF)
+        if clear_screen:
+            self.epd.init(self.epd.FULL_UPDATE) 
+            self.epd.Clear(0xFF)
+        else:
+            self.epd.init(self.epd.PART_UPDATE) 
+
         # Initialize event drawing state
         self.event_column = 0
         self.event_y = 0
