@@ -1,7 +1,8 @@
 import os
 from datetime import date
 from dotenv import load_dotenv
-from suntime import Sun
+from astral import LocationInfo
+from astral.sun import sun
 
 load_dotenv()
 
@@ -15,14 +16,16 @@ if lon_str is None:
     raise ValueError("LONGITUDE not set in .env")
 LONGITUDE = float(lon_str)
 
+loc = LocationInfo('Ełk', 'Poland', latitude=LATITUDE, longitude=LONGITUDE)
+
 def get_sunrise(target_date=None):
     if target_date is None:
         target_date = date.today()
-    sun = Sun(LATITUDE, LONGITUDE)
-    return sun.get_sunrise_time(target_date)
+    s = sun(loc.observer, target_date)
+    return s['sunrise']
 
 def get_sunset(target_date=None):
     if target_date is None:
         target_date = date.today()
-    sun = Sun(LATITUDE, LONGITUDE)
-    return sun.get_sunset_time(target_date)
+    s = sun(loc.observer, target_date)
+    return s['sunset']

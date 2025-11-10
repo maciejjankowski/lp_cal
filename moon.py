@@ -19,7 +19,7 @@ LONGITUDE = float(lon_str)
 loc = LocationInfo('Ełk', 'Poland', latitude=LATITUDE, longitude=LONGITUDE)
 
 def get_current_moon_phase():
-    p = phase(loc.observer, date.today())
+    p = phase(date.today())
     if p < 1.84566:
         return "🌑"
     elif p < 5.53699:
