@@ -32,6 +32,7 @@ def main():
         time_to_sunset = soluna.calculate_time_until_sunset(sunset_time)
         display.display_soluna(moon_phase, time_to_sunset)
         # Put display to sleep
+        display.draw_image()
         display.sleep()
         
     except KeyboardInterrupt:

@@ -45,6 +45,12 @@ class EpaperDisplay:
         self.image = Image.new('1', (self.epd.width, self.epd.height), 255)
         self.draw = ImageDraw.Draw(self.image)
     
+    def draw_image(self):
+            self.image = self.image.rotate(180)
+            # Display on e-paper
+            self.epd.displayPartBaseImage(self.epd.getbuffer(self.image))
+
+
     def _load_fonts(self):
         """Load fonts for display."""
         try:
@@ -116,13 +122,6 @@ class EpaperDisplay:
             y_position += 25
 
             self.draw.text((10, y_position), user_code, font=font_large, fill=0)
-
-            # Rotate image upside down
-            self.image = self.image.rotate(180)
-
-            # Display on e-paper
-            self.epd.displayPartBaseImage(self.epd.getbuffer(self.image))
-            logging.info(f"Auth code displayed: {user_code}")
             
         except Exception as e:
             logging.error(f"Error displaying auth code: {e}")
@@ -195,13 +194,7 @@ class EpaperDisplay:
             # Draw events
             count = self._draw_events(self.draw, events_list, font_small, font_tiny, font_medium)
             
-            # Rotate image upside down
-            self.image = self.image.rotate(180)
-
-            # Display on e-paper
-            self.epd.displayPartBaseImage(self.epd.getbuffer(self.image))
-            logging.info(f"Displayed {count if events_list else 0} events")
-            
+            # Rotate image upside down            
         except Exception as e:
             logging.error(f"Error displaying calendar events: {e}")
             raise
@@ -225,12 +218,6 @@ class EpaperDisplay:
             self.draw.text((10, y_position), f"{moon_phase}", font=font_small, fill=0)
             y_position += 15
             self.draw.text((10, y_position), f"(*) {time_to_sunset}", font=font_small, fill=0)
-
-            # Rotate image upside down
-            self.image = self.image.rotate(180)
-            
-            # Display on e-paper
-            self.epd.displayPartBaseImage(self.epd.getbuffer(self.image))
 
         except Exception as e:
             logging.error(f"Error displaying soluna: {e}")
