@@ -69,7 +69,7 @@ class EpaperDisplay:
         x_positions = [0, 125]
         x_pos = x_positions[self.event_column]
         draw.text((x_pos, self.event_y), time_str, font=font_tiny, fill=0)
-        self.event_y += 10
+        self.event_y += 15
         draw.text((x_pos, self.event_y), summary, font=font_medium, fill=0)
         
         # Update position for next event
