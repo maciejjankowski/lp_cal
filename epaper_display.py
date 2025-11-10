@@ -214,10 +214,9 @@ class EpaperDisplay:
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
             
             # Draw at bottom
-            y_position = self.epd.height - 30
+            y_position = self.epd.height - 12
             self.draw.text((10, y_position), f"{moon_phase}", font=font_small, fill=0)
-            y_position += 15
-            self.draw.text((10, y_position), f"(*) {time_to_sunset}", font=font_small, fill=0)
+            self.draw.text((30, y_position), f"{time_to_sunset}", font=font_small, fill=0)
 
         except Exception as e:
             logging.error(f"Error displaying soluna: {e}")
