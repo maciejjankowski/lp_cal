@@ -4,11 +4,8 @@
 Soluna Display Module
 Displays current moon phase and time until sunset on e-paper.
 """
-import os
-from datetime import datetime
 from sun import get_sunset, get_sunrise
 from moon import get_current_moon_phase
-from epaper_display import EpaperDisplay
 
 
 def calculate_time_until_sunset(sunset_datetime):
@@ -31,6 +28,6 @@ if __name__ == "__main__":
     moon_phase = get_current_moon_phase()
     sunset_time = get_sunset()
     time_to_sunset = calculate_time_until_sunset(sunset_time)
-    
+
     print(f"Moon Phase: {moon_phase}")
     print(f"Time to Sunset: {time_to_sunset}")

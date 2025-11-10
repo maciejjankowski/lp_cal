@@ -42,6 +42,8 @@ class EpaperDisplay:
         self.event_column = 0
         self.event_y = 0
         logging.info("E-paper display initialized")
+        self.image = Image.new('1', (self.epd.width, self.epd.height), 255)
+        self.draw = ImageDraw.Draw(self.image)
     
     def _load_fonts(self):
         """Load fonts for display."""
@@ -92,36 +94,34 @@ class EpaperDisplay:
         """
         try:
             # Create a new image with white background
-            image = Image.new('1', (self.epd.width, self.epd.height), 255)
-            draw = ImageDraw.Draw(image)
             
             # Load fonts
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
             
             # Draw text on the image
             y_position = 10
-            draw.text((10, y_position), "Google Auth", font=font_large, fill=0)
+            self.draw.text((10, y_position), "Google Auth", font=font_large, fill=0)
             y_position += 35
-            
-            draw.text((10, y_position), "Required", font=font_large, fill=0)
+
+            self.draw.text((10, y_position), "Required", font=font_large, fill=0)
             y_position += 40
-            
-            draw.text((10, y_position), "Visit:", font=font_medium, fill=0)
+
+            self.draw.text((10, y_position), "Visit:", font=font_medium, fill=0)
             y_position += 25
-            
-            draw.text((10, y_position), verification_url, font=font_small, fill=0)
+
+            self.draw.text((10, y_position), verification_url, font=font_small, fill=0)
             y_position += 25
-            
-            draw.text((10, y_position), "Enter code:", font=font_medium, fill=0)
+
+            self.draw.text((10, y_position), "Enter code:", font=font_medium, fill=0)
             y_position += 25
-            
-            draw.text((10, y_position), user_code, font=font_large, fill=0)
-            
+
+            self.draw.text((10, y_position), user_code, font=font_large, fill=0)
+
             # Rotate image upside down
-            image = image.rotate(180)
-            
+            self.image = self.image.rotate(180)
+
             # Display on e-paper
-            self.epd.displayPartBaseImage(self.epd.getbuffer(image))
+            self.epd.displayPartBaseImage(self.epd.getbuffer(self.image))
             logging.info(f"Auth code displayed: {user_code}")
             
         except Exception as e:
@@ -140,7 +140,7 @@ class EpaperDisplay:
         """
         count = 0  # Initialize count
         if not events_list:
-            draw.text((5, self.event_y), "No events today", font=font_small, fill=0)
+            self.draw.text((5, self.event_y), "No events today", font=font_small, fill=0)
         else:
             # Display events
             displayed_events = set()
@@ -182,8 +182,6 @@ class EpaperDisplay:
         """
         try:
             # Create a new image with white background
-            image = Image.new('1', (self.epd.width, self.epd.height), 255)
-            draw = ImageDraw.Draw(image)
             
             # Load fonts
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
@@ -195,13 +193,13 @@ class EpaperDisplay:
             self.event_y = y_position
             
             # Draw events
-            count = self._draw_events(draw, events_list, font_small, font_tiny, font_medium)
+            count = self._draw_events(self.draw, events_list, font_small, font_tiny, font_medium)
             
             # Rotate image upside down
-            image = image.rotate(180)
-            
+            self.image = self.image.rotate(180)
+
             # Display on e-paper
-            self.epd.displayPartBaseImage(self.epd.getbuffer(image))
+            self.epd.displayPartBaseImage(self.epd.getbuffer(self.image))
             logging.info(f"Displayed {count if events_list else 0} events")
             
         except Exception as e:
@@ -218,24 +216,22 @@ class EpaperDisplay:
         """
         try:
             # Create a new image with white background
-            image = Image.new('1', (self.epd.width, self.epd.height), 255)
-            draw = ImageDraw.Draw(image)
             
             # Load fonts
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
             
             # Draw at bottom
             y_position = self.epd.height - 30
-            draw.text((10, y_position), f"{moon_phase}", font=font_small, fill=0)
+            self.draw.text((10, y_position), f"{moon_phase}", font=font_small, fill=0)
             y_position += 15
-            draw.text((10, y_position), f"(*) {time_to_sunset}", font=font_small, fill=0)
-            
+            self.draw.text((10, y_position), f"(*) {time_to_sunset}", font=font_small, fill=0)
+
             # Rotate image upside down
-            image = image.rotate(180)
+            self.image = self.image.rotate(180)
             
             # Display on e-paper
-            self.epd.displayPartBaseImage(self.epd.getbuffer(image))
-            
+            self.epd.displayPartBaseImage(self.epd.getbuffer(self.image))
+
         except Exception as e:
             logging.error(f"Error displaying soluna: {e}")
             raise
