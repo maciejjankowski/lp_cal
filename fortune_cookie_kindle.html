@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ciasteczko z Wróżbą</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 20px;
+            text-align: center;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #000;
+        }
+
+        .fortune-display {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid #000;
+            background-color: #ffffff;
+        }
+
+        .fortune-text {
+            font-size: 22px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .warning-text {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .boundary-text {
+            font-size: 18px;
+            font-style: italic;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #000;
+        }
+
+        .prompt-text {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        button {
+            font-size: 24px;
+            padding: 20px 40px;
+            margin: 10px;
+            border: 3px solid #000;
+            background-color: #ffffff;
+            color: #000000;
+            cursor: pointer;
+            font-family: inherit;
+            min-width: 200px;
+        }
+
+        button:active {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid #000;
+            font-size: 16px;
+        }
+
+        .qr-container {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: #ffffff;
+            padding: 5px;
+            border: 2px solid #000;
+        }
+
+        .qr-code {
+            width: 80px;
+            height: 80px;
+        }
+
+        .cooldown-timer {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            margin-top: 10px;
+            color: #333;
+        }
+
+        /* E-ink optimization */
+        @media screen and (max-width: 800px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .fortune-text {
+                font-size: 18px;
+            }
+
+            .warning-text {
+                font-size: 22px;
+            }
+
+            button {
+                font-size: 20px;
+                padding: 15px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="mainContent">
+            <h1>🥠 CIASTECZKO Z WRÓŻBĄ</h1>
+            <div class="subtitle">Dotknij dla swojej wróżby</div>
+
+            <div class="fortune-display" id="fortuneDisplay">
+                <div class="fortune-text" id="fortuneText">
+                    Witaj! Dotknij ekranu, aby otrzymać swoją pierwszą wróżbę.
+                </div>
+            </div>
+
+            <div class="cooldown-timer" id="cooldownTimer"></div>
+
+            <button id="fortuneButton" onclick="handleTouch()">
+                Losuj Wróżbę
+            </button>
+
+            <div class="footer" id="footerText">
+                Dotknij dla nowej wróżby
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-container">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 29 29'%3E%3Cpath fill='%23000' d='M1 1h7v7H1zm9 0h1v1H10zm2 0h1v2h-2v1h1v1h-1v1h2v1h-1v1h1v1h-1v2h1v-1h1v-1h1v1h2v-2h-1v-1h2v-2h-1v1h-1v-1h-1v-1h1v-1h-2V3h2V1h-4v1h-1zm10 0h7v7h-7zM2 2v5h5V2zm19 0v5h5V2zm-11 1h1v1h-1zm4 0h1v1h-1zM3 3h3v3H3zm20 0h3v3h-3zm-13 7v1h-1v1H8v-1H7v1H6v1h1v1H6v1h1v-1h1v-1h1v2h1v1H9v1H8v1h1v1H8v1h1v-1h1v1h1v1H8v1H7v1h1v-1h1v2H8v1h2v-2h1v1h1v1h-1v1h3v-1h-1v-2h1v-1h-1v-1h1v1h1v1h1v-1h1v1h1v-1h-1v-1h1v-2h-1v1h-1v-2h1v-1h-2v1h-2v-1h-1v2h-1v-2h2v-1h-3v1h-1v-1h1v-2h-1v1h-1v1h-1v-1H9v1H8v-1h1v-1h1zm11-1h1v2h-1v1h-2v-1h2v-1h-1v-1h1zm3 0v1h-2v-1zm-13 1h1v2h1v-1h1v2h-1v1h-1v1h-1zm12 0h1v1h-1zm-20 1v1H1v1h1v-1h1v1h1v2H3v-1H2v2h1v-1h1v1H3v1h1v-1h3v-1H6v-1h1v-2H6v1H5v-1H4v-1H3v1H2zm20 0h1v1h-1zm-7 1v1h-1v1h1v-1h1v-1zm9 0h1v1h-1zM1 13h1v1H1zm3 0h1v3H3v1h1v1H3v1H2v1h2v-1h1v1h1v-1h1v1h1v-2H7v1H6v-2h2v-1H7v-1h1v1h2v-1h-1v-1h-1v-1H7v1H6v-1H4zm18 0h1v1h-1zm-2 1v1h-1v-1zm-8 1h1v1h-1zm11 0h1v1h-1zm-18 1h1v2H2zm7 0v1h1v1h-1v1h1v2h1v-3h1v1h1v-1h-1v-1h-1v-1h-1v1h-1zm4 0h1v1h-1zm7 0h2v1h-2zm-6 1h1v1h-1zm-3 1h1v1h-1zm-9 1h1v1H2zm6 0v1H7v1h2v-1h-1zm7 0h1v1h-1zm6 0h2v1h-2zM1 21h7v7H1zm9 0h1v1h-1zm2 0h2v1h1v-1h1v1h1v2h-1v2h1v1h-2v1h1v-1h2v-1h-1v-1h2v1h1v1h-1v1h-5v-2h-2v-1h1v-2h-1v1h-1v-1h1zm11 0h1v1h-1zM2 22v5h5v-5zm1 1h3v3H3zm17 0v1h-1v2h1v1h1v1h-1v1h2v-5h-1v1h-1v-1h-1v-1zm-10 1h1v1h-1zm13 1h1v1h-1zm-2 1h1v2h-1zm3 0h1v1h-1z'/%3E%3C/svg%3E"
+             alt="QR Code" class="qr-code" title="https://maciejjankowski.com/qr/">
+    </div>
+
+    <script>
+        // Fortune messages
+        var REGULAR_FORTUNES = [
+            "Twoja kawa będzie dzisiaj idealna - ale dopiero trzecia.",
+            "Ktoś pomyśli o Tobie dzisiaj. Prawdopodobnie Twój kot.",
+            "W przyszłości czeka Cię wielkie szczęście. Albo pizza.",
+            "Jutro będzie lepszy dzień. Chyba że będzie poniedziałek.",
+            "Twoje szczęście jest tuż za rogiem. Za którym? To tajemnica.",
+            "Niedługo spotkasz kogoś interesującego. Może to być Ty w lustrze.",
+            "Wielka przygoda czeka na Ciebie. W lodówce.",
+            "Los uśmiechnie się do Ciebie. Pewnie sardonicznie.",
+            "Czeka Cię niespodziewany prezent. Prawdopodobnie rachunek.",
+            "Wkrótce odkryjesz coś nowego. Prawdopodobnie kurz pod łóżkiem.",
+            "Twoja cierpliwość zostanie wkrótce nagrodzona. Ale nie dzisiaj.",
+            "Ktoś Cię potrzebuje. Twoja pralka, brzęczy już godzinę.",
+            "Jutro będzie świetny dzień na nowe początki. Albo dla drzemki.",
+            "Sukces jest blisko. Około 3 kawy dalej.",
+            "Wielkie rzeczy mają małe początki. Jak Twoja pensja.",
+            "Twoja mądrość rośnie. Wolniej niż chciałbyś, ale rośnie.",
+            "Szczęście sprzyja odważnym. Ale ostrożni żyją dłużej.",
+            "Wkrótce otrzymasz dobrą wiadomość. Albo spam.",
+            "Twoje marzenia się spełnią. Te o spaniu dłużej.",
+            "Los przygotował dla Ciebie niespodziankę. Miej parasolkę.",
+            "Dzisiaj jest dobry dzień na zmiany. Zacznij od skarpetek.",
+            "Wkrótce znajdziesz to, czego szukasz. Pilot był w kanapie.",
+            "Twoja energia przyciąga ludzi. Szczególnie tych nudnych.",
+            "Wielka miłość czeka za rogiem. Albo wielki pies.",
+            "Twoja intuicja Cię nie zawiedzie. Tym razem.",
+            "Szczęście lubi towarzystwo. Przychodzi z rachunkami.",
+            "Jutro będzie lepiej. Matematycznie musi w końcu być.",
+            "Twoje talenty zostaną docenione. Kiedy? Nie teraz.",
+            "Wkrótce poznasz ważną prawdę. Koty rządzą internetem.",
+            "Twoja przyszłość jest jasna. Przyciemnij ekran.",
+            "Czeka Cię podróż. Do sklepu też się liczy.",
+            "Ktoś myśli o Tobie z rozrzewnieniem. Twój terapeuta.",
+            "Wielkie pieniądze nadchodzą. W rachunkach.",
+            "Twoja kreatywność rozkwitnie. Po czwartej kawie.",
+            "Los szykuje Ci coś specjalnego. Prawdopodobnie korki.",
+            "Wkrótce staniesz przed ważnym wyborem. Herbata czy kawa.",
+            "Twoje życie nabierze tempa. Gdy zgubisz autobus.",
+            "Szczęście do Ciebie wróci. Zapomniało portfela.",
+            "Twoja cierpliwość przyniesie owoce. Zgniłe, ale zawsze.",
+            "Wielki sukces jest w zasięgu ręki. Ale za krótkie masz.",
+            "Ktoś Cię podziwia. Z daleka. Bardzo daleka.",
+            "Twoja popularność wzrośnie. W głowach spamerów.",
+            "Wkrótce odkryjesz swoje prawdziwe powołanie. Drzemka.",
+            "Los uśmiechnie się do Ciebie. Gdy się przewrócisz.",
+            "Twoje marzenia są na wyciągnięcie ręki. Ale ręce masz krótkie.",
+            "Wielka przygoda rozpocznie się dziś. Czytanie instrukcji IKEA.",
+            "Twoja szczodrość zostanie nagrodzona. Karmaą. Kiedyś.",
+            "Wkrótce otrzymasz komplement. Od bota.",
+            "Twoja mądrość zadziwi innych. Gdy wreszcie się odzywasz.",
+            "Szczęście czeka za drzwiami. Ale się pozamykało.",
+            "Jutro przyniesie dobre wiadomości. Albo piątek.",
+            "Twoja energia jest zaraźliwa. Bądź ostrożny.",
+            "Los sprzyja Ci dzisiaj. Ale tylko do 15:00.",
+            "Wkrótce poznasz kogoś ważnego. Może to być Twój szef.",
+            "Twoje talenty błysną. Gdy działasz mi światło.",
+            "Wielki sukces wymaga poświęceń. Zacznij od snu.",
+            "Twoja przyszłość jest w Twoich rękach. I telefon też.",
+            "Szczęście przychodzi do cierpliwych. Ale zajmuje mu to wieki.",
+            "Wkrótce coś Cię zaskoczy. Prawdopodobnie alarm.",
+            "Twoje marzenia się spełnią. Może w innym życiu.",
+            "Ktoś dziś o Tobie pomyśli. Windykator prawdopodobnie.",
+            "Twoja popularność rośnie. Wśród telemarkerów.",
+            "Wielka zmiana nadchodzi. Lato na jesień na przykład.",
+            "Los ma dla Ciebie plan. Najwyraźniej komediowy.",
+            "Twoja kreatywność jest nieograniczona. Wymówki też.",
+            "Wkrótce znajdziesz odpowiedź. Pytanie tylko jakie.",
+            "Szczęście lubi śmiałych. Ale ubezpieczenie też się przyda.",
+            "Twoja wytrwałość zostanie nagrodzona. Kiedyś. Może.",
+            "Wielka miłość jest blisko. Dystans społeczny jednak.",
+            "Twoja intuicja to dar. Czasami uszkodzony.",
+            "Dzisiaj jest Twój dzień. Jeden z 365.",
+            "Wkrótce otrzymasz zasłużone uznanie. Lub mandat.",
+            "Twoje życie to przygoda. Czasem horror.",
+            "Los szykuje niespodzianki. Trzymaj parasol.",
+            "Twoja mądrość wzrasta. Wolno, ale jednak.",
+            "Wielki sukces wymaga czasu. I kawy. Dużo kawy.",
+            "Twoja przyszłość jest pełna możliwości. Jak też problemów.",
+            "Szczęście uśmiechnie się do Ciebie. Kiedyś.",
+            "Wkrótce coś się zmieni. Może pogoda.",
+            "Twoje marzenia są ważne. Ale rachunki pilniejsze.",
+            "Ktoś Cię potrzebuje. Netflix pyta czy jeszcze oglądasz.",
+            "Twoja energia jest inspirująca. Dla Red Bulla.",
+            "Wielka przygoda czeka. Za mniejsza cena na allegro.",
+            "Los ma dla Ciebie prezent. Nadzieję.",
+            "Twoja cierpliwość jest niezwykła. Albo internet powolny.",
+            "Wkrótce poznasz ważną osobę. Może hydraulika.",
+            "Szczęście sprzyja przygotowanym. Ale i szczęśliwym też.",
+            "Twoje talenty są wyjątkowe. Odkryjesz je któregoś dnia.",
+            "Wielki sukces jest blisko. Geograficznie u sąsiada.",
+            "Twoja przyszłość wygląda świetnie. Z tej perspektywy.",
+            "Dzisiaj uśmiechnie się do Ciebie los. Albo nieznajomy.",
+            "Wkrótce znajdziesz coś wartościowego. Może sens życia.",
+            "Twoja kreatywność nie zna granic. Twój budżet jednak tak.",
+            "Los przygotował coś specjalnego. Poniedziałek rano.",
+            "Twoje marzenia się spełnią. W grach komputerowych.",
+            "Wielka zmiana nadchodzi. Pory roku się zmieniają.",
+            "Twoja mądrość jest legendarna. W Twoim własnym umyśle.",
+            "Szczęście czeka za rogiem. Którego? Los wie.",
+            "Wkrótce otrzymasz nagrodę. Za cierpliwość w korku.",
+            "Twoje życie to dzieło sztuki. Abstrakcyjnej.",
+            "Ktoś myśli o Tobie. Twój alarm za 5 minut.",
+            "Twoja popularność wzrośnie. Algorytm tak zdecydował.",
+            "Wielkie pieniądze czekają. W Monopoly.",
+            "Los ma dla Ciebie niespodziankę. Deszcz pewnie.",
+            "Twoja energia jest zaraźliwa. I wyczerpująca.",
+            "Wkrótce poznasz prawdę. Kawa też ma datę ważności.",
+            "Szczęście przychodzi w małych porcjach. Jak frytki.",
+            "Twoje talenty zostaną odkryte. Przez przypadek.",
+            "Wielki sukces wymaga wysiłku. Albo szczęścia.",
+            "Twoja przyszłość jest jasna. Zaciągnij rolety.",
+            "Dzisiaj będzie dobry dzień. Dla kogoś.",
+            "Wkrótce coś Cię ucieszy. Może piątek.",
+            "Twoja mądrość rośnie. Jak zadłużenie.",
+            "Los uśmiechnie się do Ciebie. Przez pomyłkę.",
+            "Twoje marzenia są piękne. I niemożliwe.",
+            "Wielka miłość czeka. W serialu na Netflix.",
+            "Twoja cierpliwość jest godna podziwu. Albo lenistwa.",
+            "Szczęście sprzyja odważnym. Ale też ostrożnym.",
+            "Wkrótce otrzymasz dobrą wiadomość. Spam się nie liczy.",
+            "Twoje życie to przygoda. Jak IKEA w sobotę.",
+            "Ktoś Cię podziwia. Twoje selfie na Instagramie.",
+            "Twoja energia przyciąga szczęście. I komary.",
+            "Wielka przygoda rozpocznie się. Jak znajdziesz klucze.",
+            "Los szykuje coś dobrego. Ale to trwa.",
+            "Twoja kreatywność jest niesamowita. W wymówkach.",
+            "Wkrótce odkryjesz swój talent. Albo kolejną wadę.",
+            "Szczęście lubi towarzystwo. Przychodzi z całą rodziną.",
+            "Twoje marzenia się spełnią. Jak kupią kupony lottery.",
+            "Wielki sukces jest w drodze. Ale utknął w korku.",
+            "Twoja przyszłość jest pełna niespodzianek. Rachunków też.",
+            "Dzisiaj coś się zmieni. Może nastrój.",
+            "Wkrótce poznasz kogoś ciekawego. Może nową wersję siebie.",
+            "Twoja mądrość jest bezcenna. Nikt nie chce płacić.",
+            "Los ma dla Ciebie plan. Plan B najwyraźniej.",
+            "Twoje talenty są niezwykłe. I dobrze ukryte.",
+            "Wielka zmiana nadchodzi. Wymień skarpetki.",
+            "Twoja cierpliwość zostanie wynagrodzona. Następnym życiu.",
+            "Szczęście czeka za drzwiami. Zgubiło klucze.",
+            "Wkrótce otrzymasz prezent. Od życia. Lekcję.",
+            "Twoje życie to film. Prawdopodobnie komedia.",
+            "Ktoś myśli o Tobie ciepło. W sumie jest gorąco.",
+            "Twoja popularność rośnie. W statystykach telemarketingu.",
+            "Wielkie pieniądze nadchodzą. W grze Monopoly.",
+            "Los uśmiechnie się do Ciebie. Ironicznie.",
+            "Twoja energia jest imponująca. Po 10 kawie.",
+            "Wkrótce odkryjesz prawdę. WiFi hasło to admin.",
+            "Szczęście sprzyja przygotowanym. Przygotuj parasol.",
+            "Twoje marzenia są ważne. Ale budzik ważniejszy.",
+            "Wielki sukces wymaga poświęceń. Netflix może poczekać.",
+            "Twoja przyszłość jest w Twoich rękach. Telefon też.",
+            "Dzisiaj będzie wyjątkowy dzień. Jak każdy inny.",
+            "Wkrótce coś Cię zaskoczy. Prawdopodobnie rachunek.",
+            "Twoja mądrość przyciąga ludzi. Też ich męczy.",
+            "Los przygotował niespodziankę. Nadzieję się spodoba.",
+            "Twoja kreatywność rozkwitnie. Jak zapłacisz rachunki.",
+            "Wielka miłość jest blisko. Ale nosi maseczkę.",
+            "Twoja cierpliwość jest legendarna. Albo internet wolny.",
+            "Szczęście lubi śmiałych. Ale ostrożnych też ceni.",
+            "Wkrótce otrzymasz komplement. Od mamy.",
+            "Twoje życie to dzieło. W trakcie remontu.",
+            "Ktoś Cię potrzebuje. Rośliny błagają o wodę.",
+            "Twoja energia jest zaraźliwa. Zachowaj dystans.",
+            "Wielka przygoda czeka. W kolejce do urzędu.",
+            "Los ma dla Ciebie dar. Doświadczenie. Znów.",
+            "Twoje talenty są ukryte. Bardzo dobrze ukryte.",
+            "Wkrótce poznasz ważną prawdę. Śmietnik już jutro.",
+            "Szczęście przychodzi w małych dawkach. Homeopatycznych.",
+            "Twoje marzenia się spełnią. W jakiejś formie.",
+            "Wielki sukces wymaga czasu. I kasy. I szczęścia.",
+            "Twoja przyszłość wygląda ciekawie. Z daleka.",
+            "Dzisiaj uśmiechnie się szczęście. Do kogoś innego.",
+            "Wkrótce znajdziesz coś ważnego. Klucze w kieszeni.",
+            "Twoja mądrość rośnie z wiekiem. Bardzo wolno.",
+            "Los szykuje coś specjalnego. Niespodziankę podatkową.",
+            "Twoja kreatywność nie zna granic. Budżet jednak tak.",
+            "Wielka zmiana nadchodzi. Numer konta bankowego.",
+            "Twoja cierpliwość jest niesamowita. Albo rezygnacja.",
+            "Szczęście czeka tuż za rogiem. Ale tam remont.",
+            "Wkrótce otrzymasz nagrodę. Za najdłuższe czekanie.",
+            "Twoje życie to przygoda. Czasem survival horror.",
+            "Ktoś myśli o Tobie. Zapewne komornik.",
+            "Twoja popularność wzrośnie. Wśród botów.",
+            "Wielkie pieniądze czekają. W cudzym portfelu.",
+            "Los uśmiechnie się do Ciebie. Sarkastycznie.",
+            "Twoja energia jest inspirująca. I wyczerpująca.",
+            "Wkrótce poznasz prawdę. Kawa nie jest jedzeniem.",
+            "Szczęście sprzyja odważnym. I ubezpieczonym.",
+            "Twoje talenty zostaną odkryte. Przez archelogów.",
+            "Wielki sukces jest blisko. Ale za płotkiem.",
+            "Twoja przyszłość jest jasna. Wyłącz lampę.",
+            "Dzisiaj będzie lepiej. Niż jutro.",
+            "Wkrótce coś się zmieni. Pogoda na przykład.",
+            "Twoja mądrość jest legendarna. W Twojej wyobraźni.",
+            "Los przygotował prezent. Doświadczenie życiowe.",
+            "Twoje marzenia są piękne. Szkoda że niemożliwe.",
+            "Wielka miłość czeka. W kolejnej kolejce.",
+            "Twoja cierpliwość zostanie nagrodzona. Kiedyś. Może.",
+            "Szczęście lubi towarzystwo. Ale przychodzi samo.",
+            "Wkrótce otrzymasz wiadomość. Prawdopodobnie spam.",
+            "Twoje życie to sztuka. Abstrakcyjna i niezrozumiała."
+        ];
+
+        var BOUNDARY_FORTUNES = [
+            "Granice są ważne - nawet dla ciasteczek z wróżbą.",
+            "Szacunek zaczyna się od słuchania 'nie'.",
+            "Cierpliwość to cnota. Szczególnie przy dotykaniu.",
+            "Prawdziwa bliskość wymaga zgody obu stron.",
+            "Najlepsze rzeczy przychodzą do tych, którzy czekają.",
+            "Zgoda to fundament każdej relacji.",
+            "Przestrzeń osobista to nie luksus, to konieczność.",
+            "Pośpiech to zły doradca, szczególnie w dotykaniu.",
+            "Komunikacja jest kluczem - zapytaj przed dotknięciem.",
+            "Szacunek dla granic to przejaw dojrzałości.",
+            "Nie' to pełne zdanie i zasługuje na szacunek.",
+            "Prawdziwa więź buduje się na wzajemnym szacunku.",
+            "Zgoda musi być świadoma, dobrowolna i wyraźna.",
+            "Cierpliwość pokazuje, że Ci naprawdę zależy.",
+            "Granice to nie odrzucenie, to troska o siebie.",
+            "Każdy ma prawo powiedzieć 'nie' w każdej chwili.",
+            "Prawdziwa siła to szanowanie cudzych granic.",
+            "Bliskość bez zgody to naruszenie, nie relacja.",
+            "Czekanie na właściwy moment to sztuka.",
+            "Szacunek dla granic buduje zaufanie.",
+            "Autonomia ciała to podstawowe prawo człowieka.",
+            "Prawdziwe połączenie wymaga wzajemności.",
+            "Zgoda to proces, nie jednorazowe 'tak'.",
+            "Poczekaj na zaproszenie - to proste.",
+            "Granice to wyraz samoświadomości i siły.",
+            "Nigdy nie zakładaj - zawsze pytaj.",
+            "Prawdziwa intymność rodzi się z szacunku.",
+            "Cierpliwość to język miłości.",
+            "Każdy dotyk wymaga przyzwolenia.",
+            "Szacunek dla 'nie' to szacunek dla osoby."
+        ];
+
+        var TOO_SOON_MESSAGES = [
+            "Nie dotykaj mnie!",
+            "Może najpierw powiesz jak masz na imię, zanim zaczniesz mnie dotykać",
+            "Hej! Powoli!",
+            "Za wcześnie!",
+            "Jeszcze nie!",
+            "Poczekaj chwilę!",
+            "Daj mi czas!",
+            "Nie tak szybko!"
+        ];
+
+        // App state
+        var lastTouchTime = 0;
+        var touchCooldown = 15000; // 15 seconds in milliseconds
+        var canTouchPromptShown = false;
+        var nextPromptTime = 0;
+        var promptTimer = null;
+        var countdownTimer = null;
+
+        // Helper functions
+        function getRandomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function getRandomFortune() {
+            return getRandomItem(REGULAR_FORTUNES);
+        }
+
+        function getBoundaryFortune() {
+            return getRandomItem(BOUNDARY_FORTUNES);
+        }
+
+        function getTooSoonMessage() {
+            return getRandomItem(TOO_SOON_MESSAGES);
+        }
+
+        function displayFortune(message, isBoundary) {
+            var display = document.getElementById('fortuneDisplay');
+            var h1 = document.querySelector('h1');
+            var footer = document.getElementById('footerText');
+
+            if (isBoundary) {
+                h1.textContent = '⚠️ GRANICE';
+                footer.textContent = 'Szacunek = Podstawa';
+            } else {
+                h1.textContent = '🥠 CIASTECZKO Z WRÓŻBĄ';
+                footer.textContent = 'Dotknij dla nowej wróżby';
+            }
+
+            display.innerHTML = '<div class="fortune-text">' + message + '</div>';
+        }
+
+        function displayTooSoonMessage() {
+            var warning = getTooSoonMessage();
+            var boundaryFortune = getBoundaryFortune();
+
+            var html = '<div class="warning-text">' + warning + '</div>' +
+                      '<div class="boundary-text">' + boundaryFortune + '</div>';
+
+            document.getElementById('fortuneDisplay').innerHTML = html;
+            document.querySelector('h1').textContent = '⚠️ GRANICE';
+            document.getElementById('footerText').textContent = 'Szacunek = Podstawa';
+        }
+
+        function displayPrompt() {
+            var display = document.getElementById('fortuneDisplay');
+            display.innerHTML = '<div class="prompt-text">Można dotykać ;-)</div>';
+            canTouchPromptShown = true;
+            stopCountdown();
+        }
+
+        function updateCountdown() {
+            var now = Date.now();
+            var timeSinceTouch = now - lastTouchTime;
+            var timeUntilReady = touchCooldown - timeSinceTouch;
+
+            if (timeUntilReady <= 0) {
+                stopCountdown();
+                return;
+            }
+
+            var seconds = Math.ceil(timeUntilReady / 1000);
+            document.getElementById('cooldownTimer').textContent =
+                'Można dotknąć za: ' + seconds + 's';
+        }
+
+        function startCountdown() {
+            stopCountdown();
+            updateCountdown();
+            countdownTimer = setInterval(updateCountdown, 1000);
+        }
+
+        function stopCountdown() {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            document.getElementById('cooldownTimer').textContent = '';
+        }
+
+        function schedulePrompt() {
+            if (promptTimer) {
+                clearTimeout(promptTimer);
+            }
+
+            // Random delay between 10-30 seconds
+            var delay = 10000 + Math.random() * 20000;
+            nextPromptTime = Date.now() + delay;
+            canTouchPromptShown = false;
+
+            promptTimer = setTimeout(function() {
+                var now = Date.now();
+                var timeSinceTouch = now - lastTouchTime;
+
+                if (timeSinceTouch >= touchCooldown && !canTouchPromptShown) {
+                    displayPrompt();
+                }
+            }, delay);
+        }
+
+        function handleTouch() {
+            var now = Date.now();
+            var timeSinceLastTouch = now - lastTouchTime;
+
+            if (timeSinceLastTouch < touchCooldown) {
+                // Touch too soon - show warning
+                displayTooSoonMessage();
+                lastTouchTime = now;
+                schedulePrompt();
+                startCountdown();
+            } else {
+                // Touch OK - show new fortune
+                var fortune = getRandomFortune();
+                displayFortune(fortune, false);
+                lastTouchTime = now;
+                schedulePrompt();
+                startCountdown();
+            }
+        }
+
+        // Initialize app
+        function init() {
+            var fortune = getRandomFortune();
+            displayFortune(fortune, false);
+            lastTouchTime = Date.now();
+            schedulePrompt();
+            startCountdown();
+        }
+
+        // Start app when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Add touch event listener for better mobile support
+        document.getElementById('fortuneButton').addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            handleTouch();
+        });
+    </script>
+</body>
+</html>
