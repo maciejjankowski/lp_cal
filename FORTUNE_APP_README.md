@@ -62,23 +62,27 @@ This app uses humor and interactive technology to teach important concepts:
 
 ## Technical Details
 
-- **Display**: Waveshare e-Paper 2.13" V2
-- **Touch Controller**: GT1151
+- **Display**: Waveshare e-Paper 2.13" V2 (rotated 90 degrees clockwise for landscape orientation)
+- **Touch Controller**: GT1151 with debouncing (1 second minimum between touch events)
 - **Cooldown**: 15 seconds between allowed touches
+- **Touch Debounce**: 1.0 second minimum between processing touch events (prevents avalanche triggering)
 - **Prompt Delay**: Random 10-30 seconds before showing "ready" message
 - **Font Support**: TrueType fonts with fallback to default
 - **QR Code**: Generated using qrcode library, 50x50 pixels, linking to https://maciejjankowski.com/qr/
 - **Dependencies**: Requires `qrcode` package (see requirements.txt)
+- **Display Rotation**: Images created at 250x122 pixels, rotated 270 degrees for proper orientation
 
 ## Customization
 
 You can easily customize:
-- Cooldown period: Change `self.touch_cooldown` in `FortuneApp.__init__()`
+- Cooldown period: Change `self.touch_cooldown` in `FortuneApp.__init__()` (default: 15 seconds)
+- Touch debounce time: Change `self.touch_debounce` in `FortuneApp.__init__()` (default: 1.0 second)
 - Prompt timing: Modify the `random.uniform(10, 30)` range
 - Add more fortunes: Add to lists in `fortune_messages.py`
 - Messages: Edit existing messages in `fortune_messages.py`
 - QR Code URL: Change the URL in `_generate_qr_code()` calls throughout `fortune_app.py`
 - QR Code size: Modify the `size` parameter in `_generate_qr_code()` calls
+- Display rotation: Change the `rotate()` angle (currently 270 degrees for 90° clockwise)
 
 ## License
 
