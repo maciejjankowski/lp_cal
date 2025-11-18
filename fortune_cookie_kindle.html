@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ciasteczko z Wróżbą</title>
     <style>
         * {
@@ -123,7 +123,7 @@
         .cooldown-timer {
             font-size: 18px;
             margin: 10px 0;
-            color: #666;
+            color: #000;
         }
 
         .subtitle {
@@ -235,7 +235,7 @@
             "Los uśmiechnie się do Ciebie. Gdy się przewrócisz.",
             "Twoje marzenia są na wyciągnięcie ręki. Ale ręce masz krótkie.",
             "Wielka przygoda rozpocznie się dziś. Czytanie instrukcji IKEA.",
-            "Twoja szczodrość zostanie nagrodzona. Karmaą. Kiedyś.",
+            "Twoja szczodrość zostanie nagrodzona. Karmą. Kiedyś.",
             "Wkrótce otrzymasz komplement. Od bota.",
             "Twoja mądrość zadziwi innych. Gdy wreszcie się odzywasz.",
             "Szczęście czeka za drzwiami. Ale się pozamykało.",
@@ -342,7 +342,7 @@
             "Dzisiaj będzie wyjątkowy dzień. Jak każdy inny.",
             "Wkrótce coś Cię zaskoczy. Prawdopodobnie rachunek.",
             "Twoja mądrość przyciąga ludzi. Też ich męczy.",
-            "Los przygotował niespodziankę. Nadzieję się spodoba.",
+            "Los przygotował niespodziankę. Mam nadzieję, że się spodoba.",
             "Twoja kreatywność rozkwitnie. Jak zapłacisz rachunki.",
             "Wielka miłość jest blisko. Ale nosi maseczkę.",
             "Twoja cierpliwość jest legendarna. Albo internet wolny.",
@@ -551,7 +551,7 @@
             if (timeSinceLastTouch < touchCooldown) {
                 // Touch too soon - show warning
                 displayTooSoonMessage();
-                lastTouchTime = now;
+                // lastTouchTime is NOT updated here to avoid extending cooldown unfairly
                 schedulePrompt();
                 startCountdown();
             } else {
