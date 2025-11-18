@@ -9,6 +9,7 @@ An interactive e-paper app that teaches about consent and boundaries through pla
 - **Touch Cooldown System**: 15-second cooldown period between touches
 - **Boundary Messages**: Special messages when touched too soon, teaching about consent
 - **Interactive Prompts**: Shows "Można dotykać ;-)" after 10-30 seconds when ready to be touched again
+- **QR Code**: Every screen displays a QR code in the bottom-right corner linking to https://maciejjankowski.com/qr/
 
 ## How It Works
 
@@ -19,6 +20,16 @@ An interactive e-paper app that teaches about consent and boundaries through pla
    - "Może najpierw powiesz jak masz na imię, zanim zaczniesz mnie dotykać" (Maybe tell me your name before touching me)
    - Plus a boundary-respecting fortune cookie
 4. **Ready Prompt**: After 10-30 seconds, displays "Można dotykać ;-)" to invite interaction
+
+## Installation
+
+First, install the required dependencies:
+
+```bash
+pip3 install -r requirements.txt
+```
+
+This will install the `qrcode` library and other required packages.
 
 ## Running the App
 
@@ -56,6 +67,8 @@ This app uses humor and interactive technology to teach important concepts:
 - **Cooldown**: 15 seconds between allowed touches
 - **Prompt Delay**: Random 10-30 seconds before showing "ready" message
 - **Font Support**: TrueType fonts with fallback to default
+- **QR Code**: Generated using qrcode library, 50x50 pixels, linking to https://maciejjankowski.com/qr/
+- **Dependencies**: Requires `qrcode` package (see requirements.txt)
 
 ## Customization
 
@@ -64,6 +77,8 @@ You can easily customize:
 - Prompt timing: Modify the `random.uniform(10, 30)` range
 - Add more fortunes: Add to lists in `fortune_messages.py`
 - Messages: Edit existing messages in `fortune_messages.py`
+- QR Code URL: Change the URL in `_generate_qr_code()` calls throughout `fortune_app.py`
+- QR Code size: Modify the `size` parameter in `_generate_qr_code()` calls
 
 ## License
 

@@ -10,6 +10,7 @@ import time
 import logging
 import random
 from PIL import Image, ImageDraw, ImageFont
+import qrcode
 
 # Add library paths
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lp_cal', 'lib')
@@ -90,6 +91,32 @@ class FortuneApp:
 
         return lines
 
+    def _generate_qr_code(self, url, size=60):
+        """
+        Generate a QR code image for the given URL.
+
+        Args:
+            url: The URL to encode in the QR code
+            size: Size of the QR code in pixels
+
+        Returns:
+            PIL Image object containing the QR code
+        """
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=2,
+            border=1,
+        )
+        qr.add_data(url)
+        qr.make(fit=True)
+
+        qr_img = qr.make_image(fill_color="black", back_color="white")
+        # Resize to desired size
+        qr_img = qr_img.resize((size, size), Image.NEAREST)
+
+        return qr_img
+
     def display_fortune(self, message, is_boundary_message=False):
         """
         Display a fortune cookie message on the e-paper screen.
@@ -134,6 +161,12 @@ class FortuneApp:
                 footer = "Dotknij dla nowej wróżby"
             draw.text((10, y_position), footer, font=font_tiny, fill=0)
 
+            # Generate and paste QR code in bottom right corner
+            qr_code = self._generate_qr_code("https://maciejjankowski.com/qr/", size=50)
+            qr_x = self.epd.width - 55  # 5px margin from right
+            qr_y = self.epd.height - 55  # 5px margin from bottom
+            image.paste(qr_code, (qr_x, qr_y))
+
             # Display on e-paper
             image = image.rotate(180)
             self.epd.displayPartBaseImage(self.epd.getbuffer(image))
@@ -164,6 +197,12 @@ class FortuneApp:
             y = (self.epd.height - text_height) // 2
 
             draw.text((x, y), message, font=font_large, fill=0)
+
+            # Generate and paste QR code in bottom right corner
+            qr_code = self._generate_qr_code("https://maciejjankowski.com/qr/", size=50)
+            qr_x = self.epd.width - 55  # 5px margin from right
+            qr_y = self.epd.height - 55  # 5px margin from bottom
+            image.paste(qr_code, (qr_x, qr_y))
 
             # Display on e-paper
             image = image.rotate(180)
@@ -210,6 +249,12 @@ class FortuneApp:
             for line in wrapped_fortune:
                 draw.text((10, y_position), line, font=font_small, fill=0)
                 y_position += 18
+
+            # Generate and paste QR code in bottom right corner
+            qr_code = self._generate_qr_code("https://maciejjankowski.com/qr/", size=50)
+            qr_x = self.epd.width - 55  # 5px margin from right
+            qr_y = self.epd.height - 55  # 5px margin from bottom
+            image.paste(qr_code, (qr_x, qr_y))
 
             # Display on e-paper
             image = image.rotate(180)
