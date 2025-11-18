@@ -210,13 +210,12 @@ class EpaperDisplay:
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
             
             # Draw at bottom of the shared image
-            y_position = self.epd.height - 45
+            y_position = self.epd.height - 30
             if ip_address:
                 self.draw.text((10, y_position), f"IP: {ip_address}", font=font_tiny, fill=0)
                 y_position += 15
-            self.draw.text((10, y_position), f"Moon: {moon_phase}", font=font_small, fill=0)
-            y_position += 15
-            self.draw.text((10, y_position), f"{time_to_sunset}", font=font_small, fill=0)
+            self.draw.text((10, y_position), f"{moon_phase}", font=font_small, fill=0)
+            self.draw.text((70, y_position), f"{time_to_sunset}", font=font_small, fill=0)
             
             logging.info(f"Drew soluna info: {moon_phase}, {time_to_sunset}, IP: {ip_address}")
             
