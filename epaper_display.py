@@ -199,25 +199,39 @@ class EpaperDisplay:
             logging.error(f"Error displaying calendar events: {e}")
             raise
     
-    def display_soluna(self, moon_phase, time_to_sunset):
+    def display_soluna(self, moon_phase, time_to_sunset, ip_address=None):
         """
-        Display moon phase and time to sunset at the bottom of the screen.
+        Display moon phase, time to sunset, and IP address at the bottom of the screen.
         
         Args:
             moon_phase: String describing the current moon phase
             time_to_sunset: String describing time remaining until sunset
+            ip_address: Optional string with the current IP address
         """
         try:
             # Create a new image with white background
+            image = Image.new('1', (self.epd.width, self.epd.height), 255)
+            draw = ImageDraw.Draw(image)
             
             # Load fonts
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
             
             # Draw at bottom
-            y_position = self.epd.height - 18
-            self.draw.text((10, y_position), f"{moon_phase}", font=font_small, fill=0)
-            self.draw.text((70, y_position), f"{time_to_sunset}", font=font_small, fill=0)
-
+            y_position = self.epd.height - 45
+            if ip_address:
+                draw.text((10, y_position), f"IP: {ip_address}", font=font_tiny, fill=0)
+                y_position += 15
+            draw.text((10, y_position), f"Moon: {moon_phase}", font=font_small, fill=0)
+            y_position += 15
+            draw.text((10, y_position), f"To Sunset: {time_to_sunset}", font=font_small, fill=0)
+            
+            # Rotate image upside down
+            image = image.rotate(180)
+            
+            # Display on e-paper
+            self.epd.displayPartBaseImage(self.epd.getbuffer(image))
+            logging.info(f"Displayed soluna: {moon_phase}, {time_to_sunset}, IP: {ip_address}")
+            
         except Exception as e:
             logging.error(f"Error displaying soluna: {e}")
             raise
