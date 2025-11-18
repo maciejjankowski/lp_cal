@@ -15,83 +15,75 @@
             font-family: 'Times New Roman', serif;
             background-color: #ffffff;
             color: #000000;
-            padding: 20px;
             text-align: center;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
         }
 
         h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #000;
+            font-size: 72px;
+            margin: 30px 0;
+            font-weight: bold;
         }
 
         .fortune-display {
-            min-height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 30px;
-            margin: 20px 0;
-            border: 2px solid #000;
-            background-color: #ffffff;
+            padding: 40px;
+            margin: 40px 0;
         }
 
         .fortune-text {
-            font-size: 22px;
-            line-height: 1.6;
+            font-size: 56px;
+            line-height: 1.4;
             text-align: center;
+            font-weight: bold;
         }
 
         .warning-text {
-            font-size: 26px;
+            font-size: 48px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .boundary-text {
-            font-size: 18px;
+            font-size: 40px;
             font-style: italic;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid #000;
+            margin-top: 20px;
+            padding-top: 20px;
         }
 
         .prompt-text {
-            font-size: 32px;
+            font-size: 64px;
             font-weight: bold;
         }
 
         button {
-            font-size: 24px;
-            padding: 20px 40px;
-            margin: 10px;
-            border: 3px solid #000;
-            background-color: #ffffff;
-            color: #000000;
+            font-size: 48px;
+            padding: 30px 60px;
+            margin: 30px;
+            border: none;
+            background-color: #000000;
+            color: #ffffff;
             cursor: pointer;
             font-family: inherit;
-            min-width: 200px;
+            min-width: 300px;
+            border-radius: 10px;
         }
 
         button:active {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: #333333;
         }
 
         button:disabled {
@@ -100,59 +92,46 @@
         }
 
         .footer {
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 2px solid #000;
-            font-size: 16px;
+            display: none;
         }
 
         .qr-container {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: #ffffff;
-            padding: 5px;
-            border: 2px solid #000;
+            display: none;
         }
 
         .qr-code {
-            width: 80px;
-            height: 80px;
+            display: none;
         }
 
         .cooldown-timer {
-            font-size: 18px;
-            margin: 10px 0;
+            font-size: 36px;
+            margin: 20px 0;
             color: #000;
         }
 
         .subtitle {
-            font-size: 16px;
-            margin-top: 10px;
+            font-size: 32px;
+            margin-top: 15px;
             color: #000;
         }
 
         /* E-ink optimization */
         @media screen and (max-width: 800px) {
-            body {
-                padding: 10px;
-            }
-
             h1 {
-                font-size: 24px;
+                font-size: 56px;
             }
 
             .fortune-text {
-                font-size: 18px;
+                font-size: 44px;
             }
 
             .warning-text {
-                font-size: 22px;
+                font-size: 40px;
             }
 
             button {
-                font-size: 20px;
-                padding: 15px 30px;
+                font-size: 40px;
+                padding: 25px 50px;
             }
         }
     </style>
@@ -160,23 +139,23 @@
 <body>
     <div class="container">
         <div id="mainContent">
-            <h1>🥠 CIASTECZKO Z WRÓŻBĄ</h1>
-            <div class="subtitle">Dotknij dla swojej wróżby</div>
+            <h1>CIASTECZKO Z WRÓŻBĄ</h1>
+            <!-- <div class="subtitle">Dotknij, aby wylosować wróżbę</div> -->
 
             <div class="fortune-display" id="fortuneDisplay">
                 <div class="fortune-text" id="fortuneText">
-                    Witaj! Dotknij ekranu, aby otrzymać swoją pierwszą wróżbę.
+                    <!-- Witaj! Dotknij ekranu, aby otrzymać swoją pierwszą wróżbę. -->
                 </div>
             </div>
 
-            <div class="cooldown-timer" id="cooldownTimer"></div>
+            
 
             <button id="fortuneButton" onclick="handleTouch()" aria-label="Losuj nową wróżbę">
                 Losuj Wróżbę
             </button>
-
+<div class="cooldown-timer" id="cooldownTimer"></div>
             <div class="footer" id="footerText">
-                Dotknij dla nowej wróżby
+                Wylosuj wróżbę
             </div>
         </div>
     </div>
@@ -277,7 +256,7 @@
             "Wkrótce poznasz ważną osobę. Może hydraulika.",
             "Szczęście sprzyja przygotowanym. Ale i szczęśliwym też.",
             "Twoje talenty są wyjątkowe. Odkryjesz je któregoś dnia.",
-            "Wielki sukces jest blisko. Geograficznie u sąsiada.",
+            "Wielki sukces jest blisko. Geograficznie: u sąsiada.",
             "Twoja przyszłość wygląda świetnie. Z tej perspektywy.",
             "Dzisiaj uśmiechnie się do Ciebie los. Albo nieznajomy.",
             "Wkrótce znajdziesz coś wartościowego. Może sens życia.",
@@ -470,7 +449,7 @@
                 footer.textContent = 'Szacunek = Podstawa';
             } else {
                 h1.textContent = '🥠 CIASTECZKO Z WRÓŻBĄ';
-                footer.textContent = 'Dotknij dla nowej wróżby';
+                footer.textContent = 'Wylosuj wróżbę'; 
             }
 
             display.innerHTML = '<div class="fortune-text">' + message + '</div>';
