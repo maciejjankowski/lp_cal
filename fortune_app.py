@@ -40,6 +40,9 @@ class FortuneApp:
         self.touch_cooldown = 15  # seconds before can touch again
         self.can_touch_prompt_shown = False
         self.next_prompt_time = 0
+        self.last_touch_processed = 0  # Track last processed touch to prevent avalanche
+        self.touch_debounce = 1.0  # Minimum seconds between processing touches
+        self.is_processing_touch = False  # Flag to prevent concurrent touch processing
 
         # Initialize display
         self.epd.init(self.epd.FULL_UPDATE)
@@ -126,8 +129,8 @@ class FortuneApp:
             is_boundary_message: Whether this is a boundary-related message
         """
         try:
-            # Create image
-            image = Image.new('1', (self.epd.width, self.epd.height), 255)
+            # Create image (swapped dimensions for 90-degree rotation)
+            image = Image.new('1', (self.epd.height, self.epd.width), 255)
             draw = ImageDraw.Draw(image)
 
             # Load fonts
@@ -139,19 +142,19 @@ class FortuneApp:
             draw.text((5, y_position), title, font=font_medium, fill=0)
             y_position += 30
 
-            # Draw separator line
-            draw.line([(5, y_position), (self.epd.width - 5, y_position)], fill=0, width=1)
+            # Draw separator line (image width is now self.epd.height)
+            draw.line([(5, y_position), (self.epd.height - 5, y_position)], fill=0, width=1)
             y_position += 10
 
-            # Wrap and draw fortune message
-            wrapped_lines = self._wrap_text(message, font_small, self.epd.width - 20)
+            # Wrap and draw fortune message (image width is now self.epd.height)
+            wrapped_lines = self._wrap_text(message, font_small, self.epd.height - 20)
             for line in wrapped_lines:
                 draw.text((10, y_position), line, font=font_small, fill=0)
                 y_position += 18
 
-            # Draw footer separator
-            y_position = self.epd.height - 35
-            draw.line([(5, y_position), (self.epd.width - 5, y_position)], fill=0, width=1)
+            # Draw footer separator (image height is now self.epd.width)
+            y_position = self.epd.width - 35
+            draw.line([(5, y_position), (self.epd.height - 5, y_position)], fill=0, width=1)
             y_position += 8
 
             # Draw footer message
@@ -163,12 +166,12 @@ class FortuneApp:
 
             # Generate and paste QR code in bottom right corner
             qr_code = self._generate_qr_code("https://maciejjankowski.com/qr/", size=50)
-            qr_x = self.epd.width - 55  # 5px margin from right
-            qr_y = self.epd.height - 55  # 5px margin from bottom
+            qr_x = self.epd.height - 55  # 5px margin from right (image width is self.epd.height)
+            qr_y = self.epd.width - 55  # 5px margin from bottom (image height is self.epd.width)
             image.paste(qr_code, (qr_x, qr_y))
 
-            # Display on e-paper
-            image = image.rotate(180)
+            # Display on e-paper (rotate 90 degrees clockwise = -90 or 270 degrees)
+            image = image.rotate(270, expand=False)
             self.epd.displayPartBaseImage(self.epd.getbuffer(image))
 
             logging.info(f"Displayed fortune: {message[:50]}...")
@@ -180,8 +183,8 @@ class FortuneApp:
     def display_touch_prompt(self):
         """Display 'Można dotykać ;-)' prompt."""
         try:
-            # Create image
-            image = Image.new('1', (self.epd.width, self.epd.height), 255)
+            # Create image (swapped dimensions for 90-degree rotation)
+            image = Image.new('1', (self.epd.height, self.epd.width), 255)
             draw = ImageDraw.Draw(image)
 
             # Load fonts
@@ -193,19 +196,19 @@ class FortuneApp:
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
 
-            x = (self.epd.width - text_width) // 2
-            y = (self.epd.height - text_height) // 2
+            x = (self.epd.height - text_width) // 2  # Image width is self.epd.height
+            y = (self.epd.width - text_height) // 2  # Image height is self.epd.width
 
             draw.text((x, y), message, font=font_large, fill=0)
 
             # Generate and paste QR code in bottom right corner
             qr_code = self._generate_qr_code("https://maciejjankowski.com/qr/", size=50)
-            qr_x = self.epd.width - 55  # 5px margin from right
-            qr_y = self.epd.height - 55  # 5px margin from bottom
+            qr_x = self.epd.height - 55  # 5px margin from right (image width is self.epd.height)
+            qr_y = self.epd.width - 55  # 5px margin from bottom (image height is self.epd.width)
             image.paste(qr_code, (qr_x, qr_y))
 
-            # Display on e-paper
-            image = image.rotate(180)
+            # Display on e-paper (rotate 90 degrees clockwise = -90 or 270 degrees)
+            image = image.rotate(270, expand=False)
             self.epd.displayPartBaseImage(self.epd.getbuffer(image))
 
             self.can_touch_prompt_shown = True
@@ -220,8 +223,8 @@ class FortuneApp:
             # Get warning message
             warning = fortune_messages.get_touch_too_soon_message()
 
-            # Create image
-            image = Image.new('1', (self.epd.width, self.epd.height), 255)
+            # Create image (swapped dimensions for 90-degree rotation)
+            image = Image.new('1', (self.epd.height, self.epd.width), 255)
             draw = ImageDraw.Draw(image)
 
             # Load fonts
@@ -229,35 +232,35 @@ class FortuneApp:
 
             # Draw warning in large text
             y_position = 20
-            wrapped_warning = self._wrap_text(warning, font_large, self.epd.width - 20)
+            wrapped_warning = self._wrap_text(warning, font_large, self.epd.height - 20)  # Image width is self.epd.height
             for line in wrapped_warning:
                 bbox = font_large.getbbox(line)
                 text_width = bbox[2] - bbox[0]
-                x = (self.epd.width - text_width) // 2
+                x = (self.epd.height - text_width) // 2  # Image width is self.epd.height
                 draw.text((x, y_position), line, font=font_large, fill=0)
                 y_position += 30
 
             y_position += 20
 
             # Draw separator
-            draw.line([(10, y_position), (self.epd.width - 10, y_position)], fill=0, width=2)
+            draw.line([(10, y_position), (self.epd.height - 10, y_position)], fill=0, width=2)  # Image width is self.epd.height
             y_position += 15
 
             # Draw boundary fortune
             boundary_fortune = fortune_messages.get_boundary_fortune()
-            wrapped_fortune = self._wrap_text(boundary_fortune, font_small, self.epd.width - 20)
+            wrapped_fortune = self._wrap_text(boundary_fortune, font_small, self.epd.height - 20)  # Image width is self.epd.height
             for line in wrapped_fortune:
                 draw.text((10, y_position), line, font=font_small, fill=0)
                 y_position += 18
 
             # Generate and paste QR code in bottom right corner
             qr_code = self._generate_qr_code("https://maciejjankowski.com/qr/", size=50)
-            qr_x = self.epd.width - 55  # 5px margin from right
-            qr_y = self.epd.height - 55  # 5px margin from bottom
+            qr_x = self.epd.height - 55  # 5px margin from right (image width is self.epd.height)
+            qr_y = self.epd.width - 55  # 5px margin from bottom (image height is self.epd.width)
             image.paste(qr_code, (qr_x, qr_y))
 
-            # Display on e-paper
-            image = image.rotate(180)
+            # Display on e-paper (rotate 90 degrees clockwise = -90 or 270 degrees)
+            image = image.rotate(270, expand=False)
             self.epd.displayPartBaseImage(self.epd.getbuffer(image))
 
             logging.info(f"Displayed 'too soon' message: {warning}")
@@ -266,29 +269,47 @@ class FortuneApp:
             logging.error(f"Error displaying too soon message: {e}")
 
     def handle_touch(self):
-        """Handle touch event with cooldown logic."""
+        """Handle touch event with cooldown logic and debouncing."""
         current_time = time.time()
-        time_since_last_touch = current_time - self.last_touch_time
+        time_since_last_processed = current_time - self.last_touch_processed
 
-        # Check if touch is allowed
-        if time_since_last_touch < self.touch_cooldown:
-            logging.info(f"Touch too soon! {time_since_last_touch:.1f}s < {self.touch_cooldown}s")
-            self.display_too_soon_message()
-            # Reset cooldown timer
-            self.last_touch_time = current_time
-            # Set next prompt time (10-30 seconds from now)
-            self.next_prompt_time = current_time + random.uniform(10, 30)
-            self.can_touch_prompt_shown = False
-        else:
-            logging.info("Touch accepted - showing new fortune")
-            # Show new fortune
-            fortune = fortune_messages.get_random_fortune()
-            self.display_fortune(fortune)
-            # Update last touch time
-            self.last_touch_time = current_time
-            # Set next prompt time (10-30 seconds from now)
-            self.next_prompt_time = current_time + random.uniform(10, 30)
-            self.can_touch_prompt_shown = False
+        # Debounce: Ignore touches that are too close together (prevent avalanche)
+        if time_since_last_processed < self.touch_debounce:
+            logging.debug(f"Touch debounced: {time_since_last_processed:.2f}s < {self.touch_debounce}s")
+            return
+
+        # Prevent concurrent touch processing
+        if self.is_processing_touch:
+            logging.debug("Touch ignored - already processing another touch")
+            return
+
+        self.is_processing_touch = True
+        self.last_touch_processed = current_time
+
+        try:
+            time_since_last_touch = current_time - self.last_touch_time
+
+            # Check if touch is allowed
+            if time_since_last_touch < self.touch_cooldown:
+                logging.info(f"Touch too soon! {time_since_last_touch:.1f}s < {self.touch_cooldown}s")
+                self.display_too_soon_message()
+                # Reset cooldown timer
+                self.last_touch_time = current_time
+                # Set next prompt time (10-30 seconds from now)
+                self.next_prompt_time = current_time + random.uniform(10, 30)
+                self.can_touch_prompt_shown = False
+            else:
+                logging.info("Touch accepted - showing new fortune")
+                # Show new fortune
+                fortune = fortune_messages.get_random_fortune()
+                self.display_fortune(fortune)
+                # Update last touch time
+                self.last_touch_time = current_time
+                # Set next prompt time (10-30 seconds from now)
+                self.next_prompt_time = current_time + random.uniform(10, 30)
+                self.can_touch_prompt_shown = False
+        finally:
+            self.is_processing_touch = False
 
     def check_touch(self):
         """Check for touch events."""
