@@ -168,40 +168,37 @@ class EpaperDisplay:
                 # Draw event
                 self.draw_event(draw, time_str, summary, font_tiny, font_small, font_medium)
                 
-                if self.event_y > self.epd.height - 20:
+                # Stop if we reach the reserved space for soluna info (45 pixels from bottom)
+                if self.event_y > self.epd.height - 50:
                     break
         return count
     
     def display_calendar_events(self, events_list):
         """
-        Display calendar events on e-paper.
+        Display calendar events on the shared image buffer.
         
         Args:
             events_list: List of event dictionaries with 'start', 'summary', etc.
         """
         try:
-            # Create a new image with white background
-            
             # Load fonts
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
             
-            y_position = 0
-            
-            # Reset event drawing position
+            # Reset event drawing position (leave space at bottom for soluna info)
             self.event_column = 0
-            self.event_y = y_position
+            self.event_y = 0
             
             # Draw events
             count = self._draw_events(self.draw, events_list, font_small, font_tiny, font_medium)
+            logging.info(f"Drew {count} events on buffer")
             
-            # Rotate image upside down            
         except Exception as e:
             logging.error(f"Error displaying calendar events: {e}")
             raise
     
     def display_soluna(self, moon_phase, time_to_sunset, ip_address=None):
         """
-        Display moon phase, time to sunset, and IP address at the bottom of the screen.
+        Display moon phase, time to sunset, and IP address at the bottom of the shared image buffer.
         
         Args:
             moon_phase: String describing the current moon phase
@@ -209,28 +206,19 @@ class EpaperDisplay:
             ip_address: Optional string with the current IP address
         """
         try:
-            # Create a new image with white background
-            image = Image.new('1', (self.epd.width, self.epd.height), 255)
-            draw = ImageDraw.Draw(image)
-            
             # Load fonts
             font_large, font_medium, font_small, font_tiny = self._load_fonts()
             
-            # Draw at bottom
+            # Draw at bottom of the shared image
             y_position = self.epd.height - 45
             if ip_address:
-                draw.text((10, y_position), f"IP: {ip_address}", font=font_tiny, fill=0)
+                self.draw.text((10, y_position), f"IP: {ip_address}", font=font_tiny, fill=0)
                 y_position += 15
-            draw.text((10, y_position), f"Moon: {moon_phase}", font=font_small, fill=0)
+            self.draw.text((10, y_position), f"Moon: {moon_phase}", font=font_small, fill=0)
             y_position += 15
-            draw.text((10, y_position), f"To Sunset: {time_to_sunset}", font=font_small, fill=0)
+            self.draw.text((10, y_position), f"{time_to_sunset}", font=font_small, fill=0)
             
-            # Rotate image upside down
-            image = image.rotate(180)
-            
-            # Display on e-paper
-            self.epd.displayPartBaseImage(self.epd.getbuffer(image))
-            logging.info(f"Displayed soluna: {moon_phase}, {time_to_sunset}, IP: {ip_address}")
+            logging.info(f"Drew soluna info: {moon_phase}, {time_to_sunset}, IP: {ip_address}")
             
         except Exception as e:
             logging.error(f"Error displaying soluna: {e}")
